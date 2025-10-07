@@ -7,7 +7,8 @@ description: "Task list template for feature implementation"
 **Input**: Design documents from `/specs/[###-feature-name]/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
+**Tests (MANDATORY per Constitution)**: All tasks MUST follow Test-Driven Development (TDD).
+Tests MUST be written FIRST, verified to FAIL, then implementation follows. This is NON-NEGOTIABLE.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
@@ -76,9 +77,9 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 1 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 1 (MANDATORY per Constitution) ⚠️
 
-**NOTE: Write these tests FIRST, ensure they FAIL before implementation**
+**TDD REQUIREMENT: Write these tests FIRST, ensure they FAIL, then implement**
 
 - [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
 - [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
@@ -102,7 +103,9 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 2 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 2 (MANDATORY per Constitution) ⚠️
+
+**TDD REQUIREMENT: Write these tests FIRST, ensure they FAIL, then implement**
 
 - [ ] T018 [P] [US2] Contract test for [endpoint] in tests/contract/test_[name].py
 - [ ] T019 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py
@@ -124,7 +127,9 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 3 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 3 (MANDATORY per Constitution) ⚠️
+
+**TDD REQUIREMENT: Write these tests FIRST, ensure they FAIL, then implement**
 
 - [ ] T024 [P] [US3] Contract test for [endpoint] in tests/contract/test_[name].py
 - [ ] T025 [P] [US3] Integration test for [user journey] in tests/integration/test_[name].py
@@ -150,7 +155,7 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] TXXX [P] Documentation updates in docs/
 - [ ] TXXX Code cleanup and refactoring
 - [ ] TXXX Performance optimization across all stories
-- [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
+- [ ] TXXX [P] Additional unit tests (TDD for any refactored code) in tests/unit/
 - [ ] TXXX Security hardening
 - [ ] TXXX Run quickstart.md validation
 
@@ -173,9 +178,11 @@ Examples of foundational tasks (adjust based on your project):
 - **User Story 2 (P2)**: Can start after Foundational (Phase 2) - May integrate with US1 but should be independently testable
 - **User Story 3 (P3)**: Can start after Foundational (Phase 2) - May integrate with US1/US2 but should be independently testable
 
-### Within Each User Story
+### Within Each User Story (TDD Workflow - MANDATORY)
 
-- Tests (if included) MUST be written and FAIL before implementation
+- Tests MUST be written FIRST and verified to FAIL (red phase) - NON-NEGOTIABLE
+- Implementation follows to make tests pass (green phase)
+- Refactor while keeping tests green (refactor phase)
 - Models before services
 - Services before endpoints
 - Core implementation before integration

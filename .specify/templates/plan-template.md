@@ -17,11 +17,12 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
+**Language/Version**: Python 3.10+ (per Constitution)
+**Package Manager**: UV (per Constitution - NON-NEGOTIABLE)
+**Primary Dependencies**: [e.g., FastAPI, aiohttp, beautifulsoup4 or NEEDS CLARIFICATION]
+**Storage**: [if applicable, e.g., PostgreSQL, SQLite, files or N/A]
+**Testing**: pytest with pytest-asyncio and pytest-cov (per Constitution)
+**Target Platform**: [e.g., Linux server, Docker container, Windows or NEEDS CLARIFICATION]
 **Project Type**: [single/web/mobile - determines source structure]  
 **Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
 **Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
@@ -31,7 +32,31 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+**I. Python 3 Development Standard**:
+- [ ] Python 3.10+ specified in Technical Context
+- [ ] Type hints planned for all public APIs
+- [ ] PEP 8 compliance tools configured
+
+**II. UV Package Management**:
+- [ ] UV specified as package manager in Technical Context
+- [ ] `pyproject.toml` structure planned
+- [ ] No alternative package managers (pip, poetry, pipenv) in plan
+
+**III. Test-Driven Development (NON-NEGOTIABLE)**:
+- [ ] Test-first workflow explicitly planned in tasks
+- [ ] Tests will be written BEFORE implementation
+- [ ] Red-Green-Refactor cycle documented in task ordering
+
+**IV. Integration Testing**:
+- [ ] Integration test scope identified (contracts, APIs, external services)
+- [ ] `tests/integration/` and `tests/contract/` directories planned
+- [ ] Integration points documented in contracts/
+
+**V. Code Quality & Documentation**:
+- [ ] Docstring requirements specified
+- [ ] Type checking (mypy strict mode) planned
+- [ ] Linting tools (ruff/flake8) configured
+- [ ] Code coverage ≥ 80% target set
 
 ## Project Structure
 
