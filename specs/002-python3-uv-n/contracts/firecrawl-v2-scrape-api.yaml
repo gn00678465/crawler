@@ -1,0 +1,263 @@
+openapi: 3.0.3
+info:
+  title: Firecrawl v2 Scrape API Contract
+  description: |
+    Contract definition for Firecrawl v2 /scrape endpoint integration.
+    This contract documents the API interface that the Web Crawler CLI Tool depends on.
+
+    **Self-Hosted Configuration**:
+    - Base URL: Configured via `FIRECRAWL_API_URL` environment variable
+    - Authentication: Optional API key via `FIRECRAWL_API_KEY` (disabled by default in self-hosted)
+
+    **Purpose**: Contract tests validate that the self-hosted Firecrawl API conforms to this specification.
+  version: 2.0.0
+  contact:
+    name: Web Crawler CLI Tool
+    url: https://github.com/firecrawl/firecrawl
+
+servers:
+  - url: http://localhost:3002/v2
+    description: Self-hosted Firecrawl instance (default)
+  - url: https://api.firecrawl.dev/v2
+    description: Firecrawl cloud service
+
+security:
+  - BearerAuth: []
+
+paths:
+  /scrape:
+    post:
+      summary: Scrape a single web page
+      description: |
+        Scrapes a single URL and returns the content in one or more specified formats.
+
+        **CLI Usage**: Called by `FirecrawlService.scrape()` when user runs `scrape --url <URL>`.
+      operationId: scrapePage
+      tags:
+        - Scraping
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScrapeRequest'
+            examples:
+              markdownOnly:
+                summary: Scrape with markdown output
+                value:
+                  url: "https://example.com"
+                  formats: ["markdown"]
+                  onlyMainContent: true
+              markdownAndHtml:
+                summary: Scrape with both markdown and HTML
+                value:
+                  url: "https://example.com"
+                  formats: ["markdown", "html"]
+                  onlyMainContent: true
+      responses:
+        '200':
+          description: Successfully scraped the web page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScrapeResponse'
+              examples:
+                success:
+                  summary: Successful scrape
+                  value:
+                    markdown: "# Example Page\n\nThis is the content."
+                    html: "<html><body><h1>Example Page</h1><p>This is the content.</p></body></html>"
+                    metadata:
+                      title: "Example Page"
+                      description: "An example web page"
+                      keywords: "example, test"
+                      sourceURL: "https://example.com"
+                    links: ["https://example.com/about", "https://example.com/contact"]
+        '400':
+          description: Bad request - invalid URL or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Invalid URL format"
+                code: "INVALID_REQUEST"
+        '401':
+          description: Unauthorized - invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Invalid API key"
+                code: "UNAUTHORIZED"
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Rate limit exceeded. Please try again later."
+                code: "RATE_LIMIT_EXCEEDED"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Internal server error"
+                code: "SERVER_ERROR"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: |
+        API key for authentication.
+        Optional for self-hosted instances with `USE_DB_AUTHENTICATION=false`.
+
+  schemas:
+    ScrapeRequest:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: uri
+          description: The URL to scrape
+          example: "https://example.com"
+        formats:
+          type: array
+          items:
+            type: string
+            enum: ["markdown", "html", "rawHtml", "links", "screenshot", "json"]
+          description: |
+            Output formats to return. CLI uses ["markdown", "html"] to support both format options.
+          default: ["markdown"]
+          example: ["markdown", "html"]
+        onlyMainContent:
+          type: boolean
+          description: |
+            If true, extract only the main content of the page, excluding headers, footers, navigation, etc.
+            CLI uses `true` to meet FR-012 (preserve essential content elements).
+          default: true
+          example: true
+        actions:
+          type: array
+          items:
+            type: object
+          description: Optional page interaction steps (e.g., clicking, scrolling). Not used in P1 implementation.
+        location:
+          type: object
+          description: Geolocation settings for scraping. Not used in P1 implementation.
+        proxy:
+          type: string
+          description: Proxy type selection. Not used in P1 implementation.
+
+    ScrapeResponse:
+      type: object
+      properties:
+        markdown:
+          type: string
+          nullable: true
+          description: |
+            Markdown-formatted content. Present when "markdown" format requested.
+          example: "# Example Page\n\nThis is the content."
+        html:
+          type: string
+          nullable: true
+          description: |
+            Cleaned HTML content. Present when "html" format requested.
+          example: "<html><body><h1>Example Page</h1><p>This is the content.</p></body></html>"
+        rawHtml:
+          type: string
+          nullable: true
+          description: Raw HTML source. Present when "rawHtml" format requested.
+        links:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: Extracted links from the page
+          example: ["https://example.com/about", "https://example.com/contact"]
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        screenshot:
+          type: string
+          nullable: true
+          description: Base64-encoded screenshot. Present when "screenshot" format requested.
+        actions:
+          type: object
+          nullable: true
+          description: Results of page interactions if actions were specified.
+
+    Metadata:
+      type: object
+      description: Metadata about the scraped page
+      properties:
+        title:
+          type: string
+          nullable: true
+          description: Page title from <title> tag
+          example: "Example Page"
+        description:
+          type: string
+          nullable: true
+          description: Page description from meta tags
+          example: "An example web page"
+        keywords:
+          type: string
+          nullable: true
+          description: Keywords from meta tags
+          example: "example, test"
+        sourceURL:
+          type: string
+          format: uri
+          description: The original URL that was scraped (after redirects)
+          example: "https://example.com"
+        statusCode:
+          type: integer
+          description: HTTP status code of the response
+          example: 200
+        ogTitle:
+          type: string
+          nullable: true
+          description: Open Graph title
+        ogDescription:
+          type: string
+          nullable: true
+          description: Open Graph description
+        ogImage:
+          type: string
+          format: uri
+          nullable: true
+          description: Open Graph image URL
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Human-readable error message
+          example: "Invalid URL format"
+        code:
+          type: string
+          description: Machine-readable error code
+          enum:
+            - INVALID_REQUEST
+            - UNAUTHORIZED
+            - RATE_LIMIT_EXCEEDED
+            - SERVER_ERROR
+            - SCRAPING_FAILED
+          example: "INVALID_REQUEST"
+        details:
+          type: object
+          additionalProperties: true
+          description: Additional error context
