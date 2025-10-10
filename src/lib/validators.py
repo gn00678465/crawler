@@ -1,6 +1,8 @@
 """Input validation utilities."""
+import re
 from urllib.parse import urlparse
 from src.lib.exceptions import ValidationError
+from src.models.scrape import OutputFormat
 
 
 def validate_url(url: str) -> bool:
@@ -29,17 +31,57 @@ def validate_url(url: str) -> bool:
 
 
 def validate_output_path(path: str) -> bool:
-    """Validate output path is a file path, not a directory.
+    """Validate output path and detect if it's a directory.
 
     Args:
-        path: File path to validate
+        path: File or directory path to validate
 
     Returns:
-        True if valid
-
-    Raises:
-        ValidationError: If path is a directory or invalid
+        True if path is a directory, False if it's a file path
     """
-    if path.endswith(("/", "\\")):
-        raise ValidationError(f"Output path must be a file, not a directory: {path}")
-    return True
+    return path.endswith(("/", "\\"))
+
+
+def generate_filename_from_url(url: str, format: OutputFormat) -> str:
+    """Generate filename from URL path following FR-010 algorithm.
+
+    Args:
+        url: Source URL to extract filename from
+        format: Output format to determine file extension
+
+    Returns:
+        Sanitized filename with appropriate extension
+
+    Example:
+        >>> generate_filename_from_url("https://example.com/path/page-name", OutputFormat.HTML)
+        'page-name.html'
+    """
+    parsed = urlparse(url)
+
+    # Extract last path segment
+    path_parts = [p for p in parsed.path.split('/') if p]
+    if path_parts:
+        base_name = path_parts[-1]
+    else:
+        # Fallback to domain name
+        base_name = parsed.netloc.replace('.', '-')
+
+    # Sanitize: replace special characters with hyphens
+    base_name = re.sub(r'[/\\?#:*"<>|]', '-', base_name)
+    base_name = re.sub(r'-+', '-', base_name)  # Collapse multiple hyphens
+    base_name = base_name.strip('-')
+
+    # Limit length to 200 characters
+    if len(base_name) > 200:
+        base_name = base_name[:200]
+
+    # Append extension
+    if format == OutputFormat.MARKDOWN:
+        extension = ".md"
+    elif format == OutputFormat.HTML:
+        extension = ".html"
+    else:
+        # Default to markdown
+        extension = ".md"
+
+    return base_name + extension

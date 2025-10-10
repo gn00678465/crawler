@@ -9,7 +9,10 @@
       "Bash(pytest:*)",
       "Bash(uv run pytest:*)",
       "Bash(uv run:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(Get-ChildItem -Path \"D:\\Projects\\crawler\\specs\" -Directory)",
+      "Bash(Select-Object -ExpandProperty Name)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

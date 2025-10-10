@@ -5,7 +5,7 @@ from src.config.settings import Settings
 from src.models.scrape import ScrapeRequest, OutputFormat
 from src.services.firecrawl import FirecrawlService
 from src.services.output import OutputService
-from src.lib.validators import validate_url, validate_output_path
+from src.lib.validators import validate_url, validate_output_path, generate_filename_from_url
 from src.lib.exceptions import CrawlerError, ValidationError
 
 
@@ -34,9 +34,10 @@ def scrape(
         # Validate URL
         validate_url(url)
 
-        # Validate output path if provided
+        # Determine if output is a directory and generate filename if needed
+        is_directory = False
         if output:
-            validate_output_path(output)
+            is_directory = validate_output_path(output)
 
         # Load settings
         try:
@@ -66,8 +67,16 @@ def scrape(
         # Output results
         output_service = OutputService()
         if output:
-            output_service.write_to_file(response, output)
-            typer.secho(f"✓ Content saved to: {output}", fg=typer.colors.GREEN, err=True)
+            # If output is a directory, generate filename from URL
+            if is_directory:
+                from pathlib import Path
+                filename = generate_filename_from_url(url, format_choice)
+                final_path = str(Path(output) / filename)
+                output_service.write_to_file(response, final_path)
+                typer.secho(f"✓ Content saved to: {final_path}", fg=typer.colors.GREEN, err=True)
+            else:
+                output_service.write_to_file(response, output)
+                typer.secho(f"✓ Content saved to: {output}", fg=typer.colors.GREEN, err=True)
         else:
             output_service.print_to_console(response)
 
