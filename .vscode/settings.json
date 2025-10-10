@@ -9,5 +9,10 @@
     "chat.tools.terminal.autoApprove": {
         ".specify/scripts/bash/": true,
         ".specify/scripts/ps/": true
-    }
+    },
+    "github.copilot.chat.commitMessageGeneration.instructions": [
+        {
+        "file": "<path>/commitMessageGeneration.instructions.md"
+        },
+    ],
 }
