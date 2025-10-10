@@ -7,6 +7,7 @@
 - 🌐 透過 Firecrawl API 爬取單一網頁
 - 📝 多種輸出格式（Markdown、HTML）
 - 💾 儲存至檔案或輸出至主控台
+- 📁 目錄輸出支援，自動根據 URL 生成檔案名稱
 - ⚡ 快速可靠，具備完善的錯誤處理
 - 🔒 使用 Pydantic 模型確保型別安全
 - ✅ 核心功能 100% 測試覆蓋率
@@ -72,6 +73,9 @@ uv run crawler scrape --url https://example.com
 # 爬取至檔案
 uv run crawler scrape --url https://example.com --output page.md
 
+# 爬取至目錄（自動生成檔案名稱）
+uv run crawler scrape --url https://example.com --output ./output
+
 # 爬取為 HTML 格式
 uv run crawler scrape --url https://example.com --html --output page.html
 ```
@@ -90,6 +94,9 @@ uv run crawler scrape --url <URL>
 # 爬取至檔案
 uv run crawler scrape --url <URL> --output <FILE>
 
+# 爬取至目錄（自動生成檔案名稱）
+uv run crawler scrape --url <URL> --output <DIRECTORY>
+
 # 使用 HTML 格式
 uv run crawler scrape --url <URL> --html --output page.html
 ```
@@ -101,6 +108,20 @@ uv run crawler scrape --url <URL> --html --output page.html
 uv run crawler scrape \
   --url https://blog.example.com/article \
   --output ./articles/article.md
+```
+
+**爬取至目錄（自動生成檔案名稱）**：
+```bash
+# 自動生成檔案名稱：example-com.md
+uv run crawler scrape \
+  --url https://example.com \
+  --output ./articles
+
+# 自動生成檔案名稱：docs-python-org-tutorial.html
+uv run crawler scrape \
+  --url https://docs.python.org/tutorial \
+  --html \
+  --output ./docs
 ```
 
 **爬取文件為 HTML**：
@@ -261,6 +282,7 @@ uv run crawler scrape --url https://example.com --output ./output/page.md
 - [x] 基本單頁爬取
 - [x] Markdown 和 HTML 輸出
 - [x] 檔案和主控台輸出
+- [x] 目錄輸出支援（自動生成檔案名稱）
 - [x] 錯誤處理和驗證
 - [x] 38/38 單元測試通過
 
@@ -276,6 +298,7 @@ uv run crawler scrape --url https://example.com --output ./output/page.md
 - [ ] 批次錯誤處理
 
 ### 階段 4（P3）- 進階功能
+- [x] 自動生成檔案名稱（基於 URL）
 - [ ] 自訂檔案名稱範本
 - [ ] 輸出目錄組織
 - [ ] 指數退避重試邏輯
