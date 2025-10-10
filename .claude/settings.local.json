@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(powershell:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(powershell.exe:*)",
+      "Bash(uv pip install:*)",
+      "Bash(uv venv:*)",
+      "Bash(pytest:*)",
+      "Bash(uv run pytest:*)",
+      "Bash(uv run:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []
