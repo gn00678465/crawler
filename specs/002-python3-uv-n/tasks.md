@@ -5,8 +5,8 @@
 
 ## Task Summary
 
-- **Total Tasks**: 47
-- **User Story 1 (P1)**: 30 tasks (MVP - Basic Web Page Crawling)
+- **Total Tasks**: 49 (added T022a, T022b for directory handling)
+- **User Story 1 (P1)**: 32 tasks (MVP - Basic Web Page Crawling)
 - **User Story 2 (P2)**: 6 tasks (Multiple Format Support)
 - **User Story 3 (P3)**: 5 tasks (Batch Crawling)
 - **User Story 4 (P3)**: 2 tasks (Custom Filenames)
@@ -734,25 +734,35 @@ def validate_url(url: str) -> bool:
 **File**: `tests/unit/test_validators.py`
 **Type**: Test
 **Story**: US1
-**Description**: Write tests for output path validation function.
+**Description**: Write tests for output path validation and detection function.
 
 **Acceptance Criteria**:
 - Test valid file paths pass
-- Test directory paths fail (must be file)
+- Test directory paths pass (returns is_directory=True)
 - Test path with non-existent parent directories passes (will be created)
+- Test is_directory() correctly detects directory paths ending with / or \
 - **Tests must FAIL**
 
 **Test Cases**:
 ```python
-def test_validate_output_path_valid():
+def test_validate_output_path_valid_file():
     """Test validate_output_path accepts valid file paths."""
-    assert validate_output_path("/path/to/file.md")
-    assert validate_output_path("./relative/path/file.html")
+    is_dir = validate_output_path("/path/to/file.md")
+    assert is_dir == False
+
+    is_dir = validate_output_path("./relative/path/file.html")
+    assert is_dir == False
 
 def test_validate_output_path_directory():
-    """Test validate_output_path rejects directory paths."""
-    with pytest.raises(ValidationError):
-        validate_output_path("/path/to/directory/")
+    """Test validate_output_path accepts directory paths."""
+    is_dir = validate_output_path("/path/to/directory/")
+    assert is_dir == True
+
+    is_dir = validate_output_path("./relative/path/")
+    assert is_dir == True
+
+    is_dir = validate_output_path("C:\\path\\to\\directory\\")
+    assert is_dir == True
 ```
 
 ---
@@ -761,34 +771,140 @@ def test_validate_output_path_directory():
 **File**: `src/lib/validators.py`
 **Type**: Implementation
 **Story**: US1
-**Description**: Implement validate_output_path function.
+**Description**: Implement validate_output_path function that detects directories vs files.
 
 **Acceptance Criteria**:
 - Function accepts path string
-- Validates path is not a directory
-- Returns bool or raises ValidationError
+- Returns True if path is a directory (ends with / or \), False otherwise
+- Never raises exceptions for valid paths
 - Google-style docstring
 - All tests from T021 pass
 
 **Implementation Outline**:
 ```python
-from pathlib import Path
-
 def validate_output_path(path: str) -> bool:
-    """Validate output path is a file path, not a directory.
+    """Validate output path and detect if it's a directory.
 
     Args:
-        path: File path to validate
+        path: File or directory path to validate
 
     Returns:
-        True if valid
+        True if path is a directory, False if it's a file path
 
     Raises:
-        ValidationError: If path is a directory or invalid
+        ValidationError: Never (all paths are valid)
     """
-    if path.endswith(("/", "\\")):
-        raise ValidationError(f"Output path must be a file, not a directory: {path}")
-    return True
+    return path.endswith(("/", "\\"))
+```
+
+---
+
+### T022a [TDD-RED]: Write tests for filename generation utility [US1]
+**File**: `tests/unit/test_validators.py`
+**Type**: Test
+**Story**: US1
+**Description**: Write tests for generate_filename_from_url() function that extracts filename from URL path.
+
+**Acceptance Criteria**:
+- Test extracts last path segment from URL (e.g., "page-name" from "https://example.com/path/page-name")
+- Test handles URLs ending with / (use domain or "index")
+- Test sanitizes special characters (/, \, ?, #, :, *, ", <, >, | → -)
+- Test limits length to 200 characters
+- Test adds appropriate extension based on format (.md, .html, .json, .txt)
+- **Tests must FAIL**
+
+**Test Cases**:
+```python
+def test_generate_filename_from_url_with_path():
+    """Test filename generation from URL with path."""
+    filename = generate_filename_from_url("https://docs.lovable.dev/prompting/prompting-one", OutputFormat.HTML)
+    assert filename == "prompting-one.html"
+
+def test_generate_filename_from_url_root():
+    """Test filename generation from URL ending with /."""
+    filename = generate_filename_from_url("https://example.com/", OutputFormat.MARKDOWN)
+    assert filename == "example-com.md" or filename == "index.md"
+
+def test_generate_filename_sanitization():
+    """Test special character sanitization in filename."""
+    filename = generate_filename_from_url("https://example.com/path/file?query=1#anchor", OutputFormat.MARKDOWN)
+    assert filename == "file.md"
+    assert "?" not in filename
+    assert "#" not in filename
+
+def test_generate_filename_length_limit():
+    """Test filename is limited to 200 characters."""
+    long_path = "a" * 300
+    filename = generate_filename_from_url(f"https://example.com/{long_path}", OutputFormat.MARKDOWN)
+    assert len(filename) <= 200 + len(".md")
+```
+
+---
+
+### T022b [TDD-GREEN]: Implement filename generation utility [US1]
+**File**: `src/lib/validators.py`
+**Type**: Implementation
+**Story**: US1
+**Description**: Implement generate_filename_from_url() function following FR-010 algorithm.
+
+**Acceptance Criteria**:
+- Extracts last path segment from URL
+- Falls back to domain if no path or path ends with /
+- Sanitizes special characters (replaces with hyphen)
+- Limits length to 200 characters
+- Appends format extension (.md, .html, .json, .txt)
+- Google-style docstring
+- All tests from T022a pass
+
+**Implementation Outline**:
+```python
+import re
+from urllib.parse import urlparse
+from src.models.scrape import OutputFormat
+
+def generate_filename_from_url(url: str, format: OutputFormat) -> str:
+    """Generate filename from URL path following FR-010 algorithm.
+
+    Args:
+        url: Source URL to extract filename from
+        format: Output format to determine file extension
+
+    Returns:
+        Sanitized filename with appropriate extension
+
+    Example:
+        >>> generate_filename_from_url("https://example.com/path/page-name", OutputFormat.HTML)
+        'page-name.html'
+    """
+    parsed = urlparse(url)
+
+    # Extract last path segment
+    path_parts = [p for p in parsed.path.split('/') if p]
+    if path_parts:
+        base_name = path_parts[-1]
+    else:
+        # Fallback to domain name
+        base_name = parsed.netloc.replace('.', '-')
+
+    # Sanitize: replace special characters with hyphens
+    base_name = re.sub(r'[/\\?#:*"<>|]', '-', base_name)
+    base_name = re.sub(r'-+', '-', base_name)  # Collapse multiple hyphens
+    base_name = base_name.strip('-')
+
+    # Limit length to 200 characters
+    if len(base_name) > 200:
+        base_name = base_name[:200]
+
+    # Append extension
+    extensions = {
+        OutputFormat.MARKDOWN: ".md",
+        OutputFormat.HTML: ".html",
+        OutputFormat.JSON: ".json",
+        OutputFormat.TEXT: ".txt",
+    }
+    extension = extensions.get(format, ".md")
+
+    return base_name + extension
 ```
 
 ---

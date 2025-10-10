@@ -17,10 +17,11 @@ As a developer, I want to crawl a single web page and save its content in a spec
 
 **Acceptance Scenarios**:
 
-1. **Given** a valid URL, **When** user runs `crawler --url https://example.com --markdown --output ./data/`, **Then** the web page content is saved as a markdown file in the ./data/ directory
-2. **Given** a valid URL, **When** user specifies a different output format (e.g., HTML, JSON), **Then** the content is saved in the requested format
-3. **Given** an invalid URL, **When** user runs the crawler, **Then** an error message is displayed indicating the URL is invalid
-4. **Given** a non-existent output directory, **When** user runs the crawler, **Then** the directory (and any parent directories) are automatically created
+1. **Given** a valid URL, **When** user runs `crawler --url https://example.com/path/page-name --markdown --output ./data/`, **Then** the web page content is saved as a markdown file in the ./data/ directory with filename auto-generated from URL path (e.g., ./data/page-name.md)
+2. **Given** a valid URL, **When** user runs `crawler --url https://example.com --markdown --output ./data/myfile.md`, **Then** the content is saved to the exact file path ./data/myfile.md
+3. **Given** a valid URL, **When** user specifies a different output format (e.g., HTML, JSON), **Then** the content is saved in the requested format with appropriate extension
+4. **Given** an invalid URL, **When** user runs the crawler, **Then** an error message is displayed indicating the URL is invalid
+5. **Given** a non-existent output directory, **When** user runs the crawler, **Then** the directory (and any parent directories) are automatically created
 
 ---
 
@@ -91,14 +92,14 @@ As a data analyst, I want to specify custom filenames for crawled content, so th
 
 - **FR-001**: System MUST accept a URL via command-line argument `--url <URL>`
 - **FR-002**: System MUST support multiple output formats: markdown, HTML, JSON, and plain text
-- **FR-003**: System MUST accept an output directory path via `--output <path>` argument
+- **FR-003**: System MUST accept both file paths and directory paths via `--output <path>` argument. When a directory path is provided (ending with `/` or `\`), the system MUST automatically generate a filename and save the file in that directory. When a file path is provided, the system MUST save directly to that path.
 - **FR-004**: System MUST save crawled content to the specified output path
 - **FR-005**: System MUST validate URL format before attempting to crawl
 - **FR-006**: System MUST handle HTTP/HTTPS protocols for web page access
 - **FR-007**: System MUST extract and convert web page content according to the specified format
 - **FR-008**: System MUST display appropriate error messages for failed crawl attempts (network errors, invalid URLs, access denied)
 - **FR-009**: System MUST support batch crawling from a file containing multiple URLs
-- **FR-010**: System MUST generate appropriate filenames when not explicitly specified (based on page title, URL, or timestamp)
+- **FR-010**: System MUST generate appropriate filenames when not explicitly specified or when output path is a directory. Filename generation algorithm: (1) Extract last path segment from URL (e.g., "prompting-one" from "https://example.com/path/prompting-one"), (2) If URL ends with "/" or has no path, use page title converted to slug format, (3) If page title unavailable, use domain name plus timestamp. Generated filenames MUST be sanitized by replacing special characters (`/`, `\`, `?`, `#`, `:`, `*`, `"`, `<`, `>`, `|`) with hyphens, limiting length to 200 characters, and appending the appropriate format extension (.md, .html, .json, .txt)
 - **FR-011**: System MUST allow users to specify custom output filenames via `--filename` argument
 - **FR-012**: System MUST preserve essential content elements during format conversion (headings, paragraphs, links, images)
 - **FR-013**: System MUST follow HTTP redirects automatically (up to 5 hops by default)
