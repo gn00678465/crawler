@@ -1,4 +1,5 @@
 """Data models for scrape operations."""
+
 from datetime import datetime
 from enum import Enum
 from typing import Optional
@@ -13,6 +14,7 @@ class OutputFormat(str, Enum):
         MARKDOWN: Markdown formatted content
         HTML: HTML formatted content
     """
+
     MARKDOWN = "markdown"
     HTML = "html"
 
@@ -27,6 +29,7 @@ class ScrapeMetadata(BaseModel):
         source_url: Original URL that was scraped
         scraped_at: Timestamp when scraping occurred
     """
+
     title: Optional[str] = None
     description: Optional[str] = None
     keywords: Optional[str] = None
@@ -42,6 +45,7 @@ class ScrapeRequest(BaseModel):
         format: Desired output format (default: MARKDOWN)
         output_path: Output file path, None means stdout
     """
+
     url: HttpUrl
     format: OutputFormat = OutputFormat.MARKDOWN
     output_path: Optional[str] = None
@@ -57,14 +61,15 @@ class ScrapeResponse(BaseModel):
         success: Whether scraping succeeded
         error_message: Error description if success=False
     """
+
     content: str
     format: OutputFormat
     metadata: ScrapeMetadata
     success: bool = True
     error_message: Optional[str] = None
 
-    @model_validator(mode='after')
-    def validate_error_message(self) -> 'ScrapeResponse':
+    @model_validator(mode="after")
+    def validate_error_message(self) -> "ScrapeResponse":
         """Validate that error_message is provided when success=False.
 
         Returns:
@@ -74,5 +79,5 @@ class ScrapeResponse(BaseModel):
             ValueError: If success=False and error_message is None
         """
         if not self.success and self.error_message is None:
-            raise ValueError('error_message required when success=False')
+            raise ValueError("error_message required when success=False")
         return self

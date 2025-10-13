@@ -1,4 +1,5 @@
 """Contract tests for Firecrawl API."""
+
 import pytest
 from firecrawl import Firecrawl
 from src.config.settings import Settings
@@ -18,7 +19,7 @@ def test_firecrawl_scrape_endpoint_contract():
 
     client = Firecrawl(
         api_key=settings.firecrawl_api_key if settings.firecrawl_api_key else None,
-        api_url=settings.firecrawl_api_url
+        api_url=settings.firecrawl_api_url,
     )
 
     try:

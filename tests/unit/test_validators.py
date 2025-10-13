@@ -1,4 +1,5 @@
 """Unit tests for input validators."""
+
 import pytest
 from src.lib.validators import validate_url, validate_output_path, generate_filename_from_url
 from src.lib.exceptions import ValidationError
@@ -43,7 +44,9 @@ def test_validate_output_path_directory():
 # Filename generation tests
 def test_generate_filename_from_url_with_path():
     """Test filename generation from URL with path."""
-    filename = generate_filename_from_url("https://docs.lovable.dev/prompting/prompting-one", OutputFormat.HTML)
+    filename = generate_filename_from_url(
+        "https://docs.lovable.dev/prompting/prompting-one", OutputFormat.HTML
+    )
     assert filename == "prompting-one.html"
 
 
@@ -55,7 +58,9 @@ def test_generate_filename_from_url_root():
 
 def test_generate_filename_sanitization():
     """Test special character sanitization in filename."""
-    filename = generate_filename_from_url("https://example.com/path/file?query=1#anchor", OutputFormat.MARKDOWN)
+    filename = generate_filename_from_url(
+        "https://example.com/path/file?query=1#anchor", OutputFormat.MARKDOWN
+    )
     assert filename == "file.md"
     assert "?" not in filename
     assert "#" not in filename

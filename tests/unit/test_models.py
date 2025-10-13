@@ -1,4 +1,5 @@
 """Unit tests for data models."""
+
 from datetime import datetime
 import pytest
 from pydantic import ValidationError
@@ -31,7 +32,7 @@ def test_scrape_metadata_valid():
         description="Test description",
         keywords="test, page",
         source_url="https://example.com",
-        scraped_at=datetime.now()
+        scraped_at=datetime.now(),
     )
     assert metadata.title == "Test Page"
     assert metadata.source_url == "https://example.com"
@@ -41,10 +42,7 @@ def test_scrape_metadata_valid():
 
 def test_scrape_metadata_optional_fields():
     """Test ScrapeMetadata with only required fields."""
-    metadata = ScrapeMetadata(
-        source_url="https://example.com",
-        scraped_at=datetime.now()
-    )
+    metadata = ScrapeMetadata(source_url="https://example.com", scraped_at=datetime.now())
     assert metadata.title is None
     assert metadata.description is None
     assert metadata.keywords is None
@@ -55,9 +53,7 @@ def test_scrape_metadata_optional_fields():
 def test_scrape_request_valid():
     """Test creating valid ScrapeRequest."""
     request = ScrapeRequest(
-        url="https://example.com",
-        format=OutputFormat.MARKDOWN,
-        output_path="/path/to/file.md"
+        url="https://example.com", format=OutputFormat.MARKDOWN, output_path="/path/to/file.md"
     )
     assert str(request.url) == "https://example.com/"
     assert request.format == OutputFormat.MARKDOWN
@@ -82,10 +78,7 @@ def test_scrape_response_success():
     """Test successful ScrapeResponse."""
     metadata = ScrapeMetadata(source_url="https://example.com", scraped_at=datetime.now())
     response = ScrapeResponse(
-        content="# Test Content",
-        format=OutputFormat.MARKDOWN,
-        metadata=metadata,
-        success=True
+        content="# Test Content", format=OutputFormat.MARKDOWN, metadata=metadata, success=True
     )
     assert response.success
     assert response.error_message is None
@@ -100,7 +93,7 @@ def test_scrape_response_failure():
             content="",
             format=OutputFormat.MARKDOWN,
             metadata=metadata,
-            success=False
+            success=False,
             # Missing error_message - should fail validation
         )
 
@@ -113,7 +106,7 @@ def test_scrape_response_failure_with_message():
         format=OutputFormat.MARKDOWN,
         metadata=metadata,
         success=False,
-        error_message="Network error"
+        error_message="Network error",
     )
     assert not response.success
     assert response.error_message == "Network error"

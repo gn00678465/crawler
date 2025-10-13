@@ -1,4 +1,5 @@
 """Typer CLI command for scraping web pages."""
+
 import typer
 from typing import Optional
 from src.config.settings import Settings
@@ -13,7 +14,7 @@ def scrape(
     url: str = typer.Option(..., help="URL to scrape"),
     markdown: bool = typer.Option(True, help="Output as markdown (default)"),
     html: bool = typer.Option(False, help="Output as HTML"),
-    output: Optional[str] = typer.Option(None, help="Output file path (default: stdout)")
+    output: Optional[str] = typer.Option(None, help="Output file path (default: stdout)"),
 ):
     """Scrape a single web page using Firecrawl.
 
@@ -44,9 +45,7 @@ def scrape(
             settings = Settings()
         except Exception as e:
             typer.secho(
-                f"Error: Missing required configuration: {e}",
-                fg=typer.colors.RED,
-                err=True
+                f"Error: Missing required configuration: {e}", fg=typer.colors.RED, err=True
             )
             raise typer.Exit(2)
 
@@ -54,11 +53,7 @@ def scrape(
         format_choice = OutputFormat.HTML if html else OutputFormat.MARKDOWN
 
         # Create request
-        request = ScrapeRequest(
-            url=url,
-            format=format_choice,
-            output_path=output
-        )
+        request = ScrapeRequest(url=url, format=format_choice, output_path=output)
 
         # Scrape page
         firecrawl_service = FirecrawlService(settings)
@@ -70,6 +65,7 @@ def scrape(
             # If output is a directory, generate filename from URL
             if is_directory:
                 from pathlib import Path
+
                 filename = generate_filename_from_url(url, format_choice)
                 final_path = str(Path(output) / filename)
                 output_service.write_to_file(response, final_path)

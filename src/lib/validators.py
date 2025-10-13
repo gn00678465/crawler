@@ -1,4 +1,5 @@
 """Input validation utilities."""
+
 import re
 from urllib.parse import urlparse
 from src.lib.exceptions import ValidationError
@@ -59,17 +60,17 @@ def generate_filename_from_url(url: str, format: OutputFormat) -> str:
     parsed = urlparse(url)
 
     # Extract last path segment
-    path_parts = [p for p in parsed.path.split('/') if p]
+    path_parts = [p for p in parsed.path.split("/") if p]
     if path_parts:
         base_name = path_parts[-1]
     else:
         # Fallback to domain name
-        base_name = parsed.netloc.replace('.', '-')
+        base_name = parsed.netloc.replace(".", "-")
 
     # Sanitize: replace special characters with hyphens
-    base_name = re.sub(r'[/\\?#:*"<>|]', '-', base_name)
-    base_name = re.sub(r'-+', '-', base_name)  # Collapse multiple hyphens
-    base_name = base_name.strip('-')
+    base_name = re.sub(r'[/\\?#:*"<>|]', "-", base_name)
+    base_name = re.sub(r"-+", "-", base_name)  # Collapse multiple hyphens
+    base_name = base_name.strip("-")
 
     # Limit length to 200 characters
     if len(base_name) > 200:

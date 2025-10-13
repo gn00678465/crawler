@@ -154,3 +154,97 @@ class OutputError(CrawlerError):
             details: Additional context (e.g., file path)
         """
         super().__init__(message, code=1, details=details)
+
+
+# AI Service Exceptions
+
+
+class AIServiceError(CrawlerError):
+    """Base exception for AI service errors.
+
+    Examples:
+        - Network errors connecting to AI API
+        - Unexpected AI response format
+        - AI service unavailable
+    """
+
+    def __init__(self, message: str, code: int = 3, details: dict | None = None):
+        """Initialize AIServiceError.
+
+        Args:
+            message: AI service error description
+            code: Exit code (default: 3 for AI service errors)
+            details: Additional context
+        """
+        super().__init__(message, code=code, details=details)
+
+
+class ModelNotFoundError(AIServiceError):
+    """AI model not found or not supported.
+
+    Raised when:
+        - Model name is invalid
+        - Model doesn't exist in the provider
+        - Model is not supported by LiteLLM
+
+    Exit code: 2 (configuration error)
+    """
+
+    def __init__(self, message: str, details: dict | None = None):
+        """Initialize ModelNotFoundError.
+
+        Args:
+            message: Model not found error description
+            details: Additional context (e.g., model name, provider)
+        """
+        super().__init__(message, code=2, details=details)
+
+
+class RateLimitExceededError(AIServiceError):
+    """AI service rate limit exceeded.
+
+    Raised when:
+        - Too many requests to AI API
+        - Token rate limit exceeded
+        - Quota exhausted
+
+    Exit code: 3 (AI service error)
+    """
+
+    def __init__(
+        self, message: str = "AI service rate limit exceeded", details: dict | None = None
+    ):
+        """Initialize RateLimitExceededError.
+
+        Args:
+            message: Rate limit error message
+            details: Additional context (e.g., retry-after, reset time)
+        """
+        super().__init__(message, code=3, details=details)
+
+
+class TokenLimitExceededError(AIServiceError):
+    """Article exceeds AI model token limit.
+
+    Raised when:
+        - Article is too long for model context window
+        - Combined prompt + article exceeds token limit
+
+    Exit code: 3 (AI service error)
+
+    Suggested actions:
+        - Use a brief summary mode
+        - Split article into sections
+        - Use a model with larger context window
+    """
+
+    def __init__(
+        self, message: str = "Article exceeds model token limit", details: dict | None = None
+    ):
+        """Initialize TokenLimitExceededError.
+
+        Args:
+            message: Token limit error message
+            details: Additional context (e.g., token count, limit)
+        """
+        super().__init__(message, code=3, details=details)

@@ -1,4 +1,5 @@
 """Unit tests for output service."""
+
 from datetime import datetime
 from pathlib import Path
 import pytest
@@ -11,15 +12,13 @@ from src.lib.exceptions import OutputError
 def sample_response():
     """Create sample ScrapeResponse for testing."""
     metadata = ScrapeMetadata(
-        source_url="https://example.com",
-        scraped_at=datetime.now(),
-        title="Test Page"
+        source_url="https://example.com", scraped_at=datetime.now(), title="Test Page"
     )
     return ScrapeResponse(
         content="# Test Content\n\nThis is a test.",
         format=OutputFormat.MARKDOWN,
         metadata=metadata,
-        success=True
+        success=True,
     )
 
 
@@ -31,7 +30,7 @@ def test_output_service_write_to_file(tmp_path, sample_response):
     service.write_to_file(sample_response, str(file_path))
 
     assert file_path.exists()
-    assert file_path.read_text(encoding='utf-8') == sample_response.content
+    assert file_path.read_text(encoding="utf-8") == sample_response.content
 
 
 def test_output_service_creates_directories(tmp_path, sample_response):

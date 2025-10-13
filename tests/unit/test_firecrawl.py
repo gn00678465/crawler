@@ -1,4 +1,5 @@
 """Unit tests for Firecrawl service."""
+
 from datetime import datetime
 from unittest.mock import Mock, patch
 import pytest
@@ -11,10 +12,7 @@ from src.lib.exceptions import RateLimitError, FirecrawlApiError
 @pytest.fixture
 def mock_settings():
     """Create mock Settings for testing."""
-    return Settings(
-        firecrawl_api_url="http://localhost:3002",
-        firecrawl_api_key="test-key"
-    )
+    return Settings(firecrawl_api_url="http://localhost:3002", firecrawl_api_key="test-key")
 
 
 def test_firecrawl_service_scrape_markdown(mocker, mock_settings):
@@ -24,13 +22,10 @@ def test_firecrawl_service_scrape_markdown(mocker, mock_settings):
     mock_client.scrape.return_value = {
         "markdown": "# Test Content",
         "html": "<h1>Test Content</h1>",
-        "metadata": {
-            "title": "Test Page",
-            "sourceURL": "https://example.com"
-        }
+        "metadata": {"title": "Test Page", "sourceURL": "https://example.com"},
     }
 
-    with patch('src.services.firecrawl.Firecrawl', return_value=mock_client):
+    with patch("src.services.firecrawl.Firecrawl", return_value=mock_client):
         service = FirecrawlService(mock_settings)
         request = ScrapeRequest(url="https://example.com", format=OutputFormat.MARKDOWN)
         response = service.scrape(request)
@@ -47,12 +42,10 @@ def test_firecrawl_service_scrape_html(mocker, mock_settings):
     mock_client.scrape.return_value = {
         "markdown": "# Test",
         "html": "<h1>Test</h1>",
-        "metadata": {
-            "sourceURL": "https://example.com"
-        }
+        "metadata": {"sourceURL": "https://example.com"},
     }
 
-    with patch('src.services.firecrawl.Firecrawl', return_value=mock_client):
+    with patch("src.services.firecrawl.Firecrawl", return_value=mock_client):
         service = FirecrawlService(mock_settings)
         request = ScrapeRequest(url="https://example.com", format=OutputFormat.HTML)
         response = service.scrape(request)
@@ -66,7 +59,7 @@ def test_firecrawl_service_rate_limit(mocker, mock_settings):
     mock_client = mocker.Mock()
     mock_client.scrape.side_effect = Exception("429: Rate limit exceeded")
 
-    with patch('src.services.firecrawl.Firecrawl', return_value=mock_client):
+    with patch("src.services.firecrawl.Firecrawl", return_value=mock_client):
         service = FirecrawlService(mock_settings)
         request = ScrapeRequest(url="https://example.com")
 
@@ -79,7 +72,7 @@ def test_firecrawl_service_general_error(mocker, mock_settings):
     mock_client = mocker.Mock()
     mock_client.scrape.side_effect = Exception("Network error")
 
-    with patch('src.services.firecrawl.Firecrawl', return_value=mock_client):
+    with patch("src.services.firecrawl.Firecrawl", return_value=mock_client):
         service = FirecrawlService(mock_settings)
         request = ScrapeRequest(url="https://example.com")
 

@@ -1,4 +1,5 @@
 """Unit tests for exception hierarchy."""
+
 import pytest
 from src.lib.exceptions import (
     CrawlerError,
