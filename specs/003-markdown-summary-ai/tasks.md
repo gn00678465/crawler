@@ -11,7 +11,7 @@
 
 ## Phase 1: Setup & Configuration (3 tasks)
 
-### T001: Install LiteLLM Dependency
+### T001: Install LiteLLM Dependency [X]
 **Type**: Setup
 **TDD Phase**: N/A (setup task)
 **Depends On**: None
@@ -31,7 +31,7 @@ Add LiteLLM library to project dependencies and verify installation.
 
 ---
 
-### T002: Create Environment Configuration Template
+### T002: Create Environment Configuration Template [X]
 **Type**: Setup
 **TDD Phase**: N/A (setup task)
 **Depends On**: None
@@ -58,7 +58,7 @@ Add AI model configuration variables to `.env.example` template.
 
 ---
 
-### T003: Create Default System Prompts Configuration
+### T003: Create Default System Prompts Configuration [X]
 **Type**: Setup
 **TDD Phase**: N/A (configuration)
 **Depends On**: None
@@ -84,7 +84,7 @@ Create `src/config/prompts.py` with default system prompts for each summary leng
 
 ## Phase 2: Data Models (TDD) (15 tasks)
 
-### T004: Write Tests for SummarizeRequest Model
+### T004: Write Tests for SummarizeRequest Model [X]
 **Type**: Test (Unit)
 **TDD Phase**: RED
 **Depends On**: None
@@ -109,7 +109,7 @@ Write comprehensive unit tests for `SummarizeRequest` Pydantic model covering va
 
 ---
 
-### T005: Implement SummarizeRequest Model
+### T005: Implement SummarizeRequest Model [X]
 **Type**: Implementation
 **TDD Phase**: GREEN
 **Depends On**: T004
@@ -138,7 +138,7 @@ Implement `SummarizeRequest` Pydantic model to pass all tests.
 
 ---
 
-### T006: Write Tests for AIModelConfiguration Model
+### T006: Write Tests for AIModelConfiguration Model [X]
 **Type**: Test (Unit)
 **TDD Phase**: RED
 **Depends On**: None
@@ -163,7 +163,7 @@ Write unit tests for `AIModelConfiguration` model including factory method.
 
 ---
 
-### T007: Implement AIModelConfiguration Model
+### T007: Implement AIModelConfiguration Model [X]
 **Type**: Implementation
 **TDD Phase**: GREEN
 **Depends On**: T006
@@ -186,7 +186,7 @@ Implement `AIModelConfiguration` model with parsing logic.
 
 ---
 
-### T008: Write Tests for ArticleContent Model
+### T008: Write Tests for ArticleContent Model [X]
 **Type**: Test (Unit)
 **TDD Phase**: RED
 **Depends On**: None
@@ -209,7 +209,7 @@ Write tests for `ArticleContent` model including computed properties.
 
 ---
 
-### T009: Implement ArticleContent Model
+### T009: Implement ArticleContent Model [X]
 **Type**: Implementation
 **TDD Phase**: GREEN
 **Depends On**: T008
@@ -232,7 +232,7 @@ Implement `ArticleContent` model to pass tests.
 
 ---
 
-### T010: Write Tests for AISummary Model
+### T010: Write Tests for AISummary Model [X]
 **Type**: Test (Unit)
 **TDD Phase**: RED
 **Depends On**: None
@@ -255,7 +255,7 @@ Write tests for `AISummary` model including metadata fields.
 
 ---
 
-### T011: Implement AISummary Model
+### T011: Implement AISummary Model [X]
 **Type**: Implementation
 **TDD Phase**: GREEN
 **Depends On**: T010
@@ -277,7 +277,7 @@ Implement `AISummary` model to pass tests.
 
 ---
 
-### T012: Write Tests for OutputFile Model Extension
+### T012: Write Tests for OutputFile Model Extension [X]
 **Type**: Test (Unit)
 **TDD Phase**: RED
 **Depends On**: None
@@ -298,7 +298,7 @@ Write tests for `OutputFile` model (may already exist, verify/extend).
 
 ---
 
-### T013: Implement/Extend OutputFile Model
+### T013: Implement/Extend OutputFile Model [X]
 **Type**: Implementation
 **TDD Phase**: GREEN
 **Depends On**: T012
@@ -320,7 +320,7 @@ Implement or extend `OutputFile` model to pass tests.
 
 ---
 
-### T014: Refactor All Models (Code Quality)
+### T014: Refactor All Models (Code Quality) [X]
 **Type**: Refactor
 **TDD Phase**: REFACTOR
 **Depends On**: T005, T007, T009, T011, T013
@@ -397,7 +397,7 @@ Write contract tests for CLI command interface per `contracts/cli-summarize.md`.
 
 ---
 
-### T017: Extend Custom Exceptions for AI Errors
+### T017: Extend Custom Exceptions for AI Errors [X]
 **Type**: Implementation
 **TDD Phase**: N/A (infrastructure)
 **Depends On**: None
@@ -421,7 +421,7 @@ Extend `src/lib/exceptions.py` with AI-specific exceptions.
 
 ---
 
-### T018: Update Settings for AI Configuration
+### T018: Update Settings for AI Configuration [X]
 **Type**: Implementation
 **TDD Phase**: N/A (configuration)
 **Depends On**: T007
@@ -448,7 +448,7 @@ Extend `src/config/settings.py` with AI model settings section.
 
 ## Phase 3: User Story 1 - Basic Article Summarization (P1) (8 tasks)
 
-### T019: Write Unit Tests for AI Service (Core Functionality)
+### T019: Write Unit Tests for AI Service (Core Functionality) [X]
 **Type**: Test (Unit)
 **TDD Phase**: RED
 **Depends On**: T011, T015, T017
@@ -476,7 +476,7 @@ Write unit tests for `AIService` core summarization logic.
 
 ---
 
-### T020: Implement AI Service Core
+### T020: Implement AI Service Core [X]
 **Type**: Implementation
 **TDD Phase**: GREEN
 **Depends On**: T019
@@ -504,7 +504,7 @@ Implement `AIService` class with LiteLLM integration.
 
 ---
 
-### T021: Write Unit Tests for Prompt Service
+### T021: Write Unit Tests for Prompt Service [X]
 **Type**: Test (Unit)
 **TDD Phase**: RED
 **Depends On**: T003
@@ -527,7 +527,7 @@ Write tests for `PromptService` loading system prompts.
 
 ---
 
-### T022: Implement Prompt Service
+### T022: Implement Prompt Service [X]
 **Type**: Implementation
 **TDD Phase**: GREEN
 **Depends On**: T021
@@ -552,7 +552,7 @@ Implement `PromptService` for managing system prompts.
 
 ---
 
-### T023: Write Unit Tests for CLI Summarize Command (Basic Flow)
+### T023: Write Unit Tests for CLI Summarize Command (Basic Flow) [X]
 **Type**: Test (Unit)
 **TDD Phase**: RED
 **Depends On**: T016, T020, T022
@@ -579,7 +579,7 @@ Write unit tests for `summarize` CLI command orchestration logic.
 
 ---
 
-### T024: Implement CLI Summarize Command (Basic Flow)
+### T024: Implement CLI Summarize Command (Basic Flow) [X]
 **Type**: Implementation
 **TDD Phase**: GREEN
 **Depends On**: T023
